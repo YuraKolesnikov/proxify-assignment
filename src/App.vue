@@ -6,6 +6,7 @@
       <v-container fluid>
         <v-row>
           <chat-container 
+            :ended="chatEnded"
             :loading="loading"
             :messages="messages" />
         </v-row>

@@ -4,6 +4,9 @@
 		<li class="indicator" v-if="loading">
 			<typing-indicator />
 		</li>
+    <li class="indicator" v-if="ended">
+      <p class="text-small">Bot felt bored and has left the chat</p>
+    </li>
   </ul>
 </template>
 <script>
@@ -14,7 +17,8 @@ export default {
 	},
 	props: {
 		messages: Array,
-		loading: Boolean
+		loading: Boolean,
+    ended: Boolean
 	}
 }
 </script>
@@ -68,5 +72,12 @@ export default {
 
   .me:last-of-type {
     border-bottom-right-radius: 30px;
+  }
+
+  .text-small {
+    color: #999;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
   }
 </style>

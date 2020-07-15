@@ -37,7 +37,7 @@
 		"owner": "him"
 	},
 	{
-		"text": "Wow, cool. Farewell now, %name%",
+		"text": "Wow, cool. Farewell now, %name%.",
 		"owner": "him",
 		"last": true
 	}
