@@ -15,7 +15,7 @@
     <v-content>
       <v-container fluid>
         <v-row>
-          <ul>
+          <ul ref="chatContainer">
             <li v-for="(message, index) in messages" v-bind:key="index" :class="message.owner">{{message.text}}</li>
           </ul>
         </v-row>
@@ -32,13 +32,13 @@
           <v-col cols="12" md="12">
             <div class="my-2">
               <v-btn 
-                :disabled="ableToSubmitAnswer"
+                :disabled="submitButtonBlocked || chatEnded"
                 @click="send" 
                 x-large 
                 :style="buttonStyles"
                 color="primary" 
                 dark>
-                {{ chatStarted ? 'Send Message' : 'Let\'s chat!' }}
+                {{ buttonTitle }}
               </v-btn>
             </div>
           </v-col>
@@ -66,6 +66,7 @@ export default {
     input: '',
     loading: false,
     chatStarted: false,
+    chatEnded: false,
     messages: [],
     currentQuestion: '',
     buttonStyles: {
@@ -87,8 +88,6 @@ export default {
 
   methods: {
     send() {
-      this.loading = true;
-
       this.validate()
 
       this.chatData[this.currentQuestion] = this.input
@@ -119,10 +118,14 @@ export default {
         if (!this.chatStarted) {
           this.chatStarted = true;
         }
+
+        if (this.messages[this.messages.length - 1].last) {
+          this.chatStarted = false;
+          this.chatEnded = true;
+        }
       })
       .catch(e => console.log(e))
       .finally(() => {
-        this.loading = false;
         this.input = '';
       })
     },
@@ -143,15 +146,19 @@ export default {
   },
 
   computed: {
-    ableToSubmitAnswer() {
+    submitButtonBlocked() {
       return this.chatStarted && !this.input
+    },
+
+    buttonTitle() {
+      return this.chatStarted ? 'Send Message' : 'Let\'s chat!'
     }
   }
 };
 </script>
 
 <style>
-  ul{
+  ul {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -159,13 +166,13 @@ export default {
     left: 0;
     right: 0;
     overflow-y: scroll;
-    height:600px;
+    height: 600px;
     z-index: 0;
     padding-bottom: 100px;
   }
 
-  ul li{
-    display:inline-block;
+  ul li {
+    display: inline-block;
     clear: both;
     padding: 20px;
     border-radius: 30px;
@@ -173,22 +180,22 @@ export default {
     font-family: Helvetica, Arial, sans-serif;
   }
 
-  .him{
+  .him {
     background: #eee;
     float: left;
   }
 
-  .me{
+  .me {
     float: right;
     background: #0084ff;
     color: #fff;
   }
 
-  .him + .me{
+  .him + .me {
     border-bottom-right-radius: 5px;
   }
 
-  .me + .me{
+  .me + .me {
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
   }
