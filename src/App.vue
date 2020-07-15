@@ -125,10 +125,6 @@ export default {
             this.messages = [ ...this.messages, ...receivedData ]
           }
 
-          this.$nextTick(() => {
-            this.$refs.chat.$refs.container.scrollTop = this.$refs.chat.$refs.container.scrollHeight
-          })
-
           if (this.messages[this.messages.length - 1].last) {
             this.chatStarted = false
             this.chatEnded = true
@@ -178,6 +174,12 @@ export default {
           owner: 'him'
         })
       }, 1500)
+    },
+
+    scrollChatToBottom() {
+      this.$nextTick(() => {
+        this.$refs.chat.$refs.container.scrollTop = this.$refs.chat.$refs.container.scrollHeight
+      })
     }
   },
 
@@ -192,6 +194,15 @@ export default {
 
     buttonTitle() {
       return this.chatStarted ? 'Send Message' : 'Let\'s chat!'
+    }
+  },
+
+  watch: {
+    messages() {
+      const { scrollHeight, clientHeight } = this.$refs.chat.$refs.container
+      if (scrollHeight > clientHeight) {
+        this.scrollChatToBottom()
+      }
     }
   }
 };

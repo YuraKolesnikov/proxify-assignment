@@ -24,21 +24,22 @@ export default {
 </script>
 <style lang="scss">
 	ul {
+    display: flex;
+    flex-flow: column;
+    width: 100%;
     list-style: none;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    left: 0;
-    right: 0;
     overflow: auto;
     height: 600px;
     z-index: 0;
-    padding-bottom: 100px;
+    padding: {
+      left: 24px;
+      right: 24px;
+      bottom: 100px;
+      top: 50px;
+    }
   }
 
   ul li {
-    display: inline-block;
-    clear: both;
     padding: 20px;
     border-radius: 30px;
     margin-bottom: 2px;
@@ -48,7 +49,7 @@ export default {
 
   .him,
 	.indicator {
-    float: left;
+    align-self: flex-start;
   }
 
 	.him {
@@ -56,7 +57,7 @@ export default {
 	}
 
   .me {
-    float: right;
+    align-self: flex-end;
     background: #0084ff;
     color: #fff;
   }
