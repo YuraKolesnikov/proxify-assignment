@@ -5,7 +5,8 @@
     <v-content>
       <v-container fluid>
         <v-row>
-          <chat-container 
+          <chat-container
+            ref="chat"
             :ended="chatEnded"
             :loading="loading"
             :messages="messages" />
@@ -123,6 +124,10 @@ export default {
           } else {
             this.messages = [ ...this.messages, ...receivedData ]
           }
+
+          this.$nextTick(() => {
+            this.$refs.chat.$refs.container.scrollTop = this.$refs.chat.$refs.container.scrollHeight
+          })
 
           if (this.messages[this.messages.length - 1].last) {
             this.chatStarted = false

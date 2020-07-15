@@ -1,5 +1,5 @@
 <template>
-	<ul ref="chatContainer">
+	<ul ref="container">
     <li v-for="(message, index) in messages" v-bind:key="index" :class="message.owner">{{message.text}}</li>
 		<li class="indicator" v-if="loading">
 			<typing-indicator />
@@ -30,7 +30,7 @@ export default {
     position: absolute;
     left: 0;
     right: 0;
-    overflow-y: scroll;
+    overflow: auto;
     height: 600px;
     z-index: 0;
     padding-bottom: 100px;
