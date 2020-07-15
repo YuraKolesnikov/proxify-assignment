@@ -22,7 +22,7 @@
             </v-textarea>
           </v-col>
           <v-col cols="12" md="12">
-            <div class="my-2">
+            <div class="my-2 d-flex justify-end">
               <v-btn 
                 :class="{'button-disabled': submitButtonBlocked || chatEnded}"
                 @click="send" 
@@ -70,9 +70,7 @@ export default {
     currentQuestion: '',
     countdown: null,
     buttonStyles: {
-      position: 'absolute', 
-      bottom: 0, 
-      right: 0, 
+      float: 'right',
       background: '#56c8d8'
     },
     messageContainerStyles: {
