@@ -69,6 +69,7 @@ export default {
     chatEnded: false,
     messages: [],
     currentQuestion: '',
+    countdown: null,
     buttonStyles: {
       position: 'absolute', 
       bottom: 0, 
@@ -116,23 +117,26 @@ export default {
         }
 
         if (!this.chatStarted) {
-          this.chatStarted = true;
+          this.chatStarted = true
         }
 
         if (this.messages[this.messages.length - 1].last) {
-          this.chatStarted = false;
-          this.chatEnded = true;
+          this.chatStarted = false
+          this.chatEnded = true
+          this.clearCountdown()
+        } else {
+          this.resetCountdown()
         }
       })
       .catch(e => console.log(e))
       .finally(() => {
-        this.input = '';
+        this.input = ''
       })
     },
 
     validate() {
       if (this.chatStarted && !this.input.trim()) {
-        alert('Sorry, I don\'t read in Invisibilish')
+        alert('Sorry, I don\'t read in Invisibilish');
         return
       }
     },
@@ -142,6 +146,23 @@ export default {
         ...q,
         text: q.text.replace('%name%', this.chatData.name)
       }))
+    },
+
+    resetCountdown() {
+      this.clearCountdown()
+
+      this.countdown = setInterval(() => this.sendStillThereAlert(), 15000)
+    },
+
+    clearCountdown() {
+      if (this.countdown) clearInterval(this.countdown)
+    },
+
+    sendStillThereAlert() {
+      this.messages.push({
+        text: 'Still here?',
+        owner: 'him'
+      })
     }
   },
 
