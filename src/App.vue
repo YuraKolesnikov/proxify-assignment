@@ -22,7 +22,7 @@
           <v-col cols="12" md="12">
             <div class="my-2">
               <v-btn 
-                :disabled="submitButtonBlocked || chatEnded"
+                :class="{'button-disabled': submitButtonBlocked || chatEnded}"
                 @click="send" 
                 x-large 
                 :style="buttonStyles"
@@ -99,6 +99,12 @@ export default {
         })
       }
 
+      this.input = ''
+
+      if (!this.chatStarted) {
+        this.chatStarted = true
+      }
+
       /* Used just for visual chat simulation */
       setTimeout(() => {
         messageHandler.sendMessage(this.next)
@@ -117,10 +123,6 @@ export default {
             this.messages = [ ...this.messages, ...receivedData ]
           }
 
-          if (!this.chatStarted) {
-            this.chatStarted = true
-          }
-
           if (this.messages[this.messages.length - 1].last) {
             this.chatStarted = false
             this.chatEnded = true
@@ -131,7 +133,6 @@ export default {
         })
         .catch(e => console.log(e))
         .finally(() => {
-          this.input = ''
           this.loading = false
         })
       }, 2000)
@@ -163,6 +164,7 @@ export default {
 
     sendStillThereAlert() {
       this.loading = true
+      /* Used just for visual chat simulation */
       setTimeout(() => {
         this.loading = false
         this.messages.push({
@@ -188,3 +190,10 @@ export default {
   }
 };
 </script>
+<style lang="scss">
+.button-disabled {
+  pointer-events: none;
+  opacity: .5;
+  cursor: default;
+}
+</style>
