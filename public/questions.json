@@ -38,6 +38,7 @@
 	},
 	{
 		"text": "Wow, cool. Farewell now, %name%",
-		"owner": "him"
+		"owner": "him",
+		"last": true
 	}
 ]
