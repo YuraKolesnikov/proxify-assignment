@@ -1,23 +1,11 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-
-      </div>
-
-      <v-spacer></v-spacer>
-    </v-app-bar>
+    <navbar />
 
     <v-content>
       <v-container fluid>
         <v-row>
-          <ul ref="chatContainer">
-            <li v-for="(message, index) in messages" v-bind:key="index" :class="message.owner">{{message.text}}</li>
-          </ul>
+          <chat-container :messages="messages" />
         </v-row>
         <v-row :style="messageContainerStyles">
           <v-col cols="12" md="12">
@@ -49,10 +37,17 @@
 </template>
 
 <script>
+import Navbar from '@/components/Navbar'
+import ChatContainer from '@/components/ChatContainer'
 import { messageHandler } from '@/services/messageHandler'
 
 export default {
   name: 'App',
+
+  components: {
+    Navbar,
+    ChatContainer
+  },
 
   data: () => ({
     chatData: {
