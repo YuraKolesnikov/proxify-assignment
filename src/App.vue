@@ -19,7 +19,7 @@
             <li v-for="(message, index) in messages.slice(0, next)" v-bind:key="index" :class="message.owner">{{message.text}}</li>
           </ul>
         </v-row>
-        <v-row :style="{position: 'absolute', bottom: 0, left: 0, right: 0, padding: '10px', zIndex: 100, background: '#ffffff'}">
+        <v-row :style="messageContainerStyles">
           <v-col cols="12" md="12">
             <v-textarea
                     filled
@@ -30,7 +30,7 @@
           </v-col>
           <v-col cols="12" md="12">
             <div class="my-2">
-              <v-btn @click="send" x-large :style="{position: 'absolute', bottom: 0, right: 0, background: '#56c8d8'}" color="primary" dark>Send Message</v-btn>
+              <v-btn @click="send" x-large :style="buttonStyles" color="primary" dark>Send Message</v-btn>
             </div>
           </v-col>
         </v-row>
@@ -98,7 +98,22 @@ export default {
       {
         text: "Wow, cool",
       }
-    ]
+    ],
+    buttonStyles: {
+      position: 'absolute', 
+      bottom: 0, 
+      right: 0, 
+      background: '#56c8d8'
+    },
+    messageContainerStyles: {
+      position: 'absolute', 
+      bottom: 0, 
+      left: 0, 
+      right: 0, 
+      padding: '10px', 
+      zIndex: 100, 
+      background: '#ffffff'
+    }
   }),
   methods: {
     send() {
