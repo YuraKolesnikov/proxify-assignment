@@ -16,21 +16,30 @@
       <v-container fluid>
         <v-row>
           <ul>
-            <li v-for="(message, index) in messages.slice(0, next)" v-bind:key="index" :class="message.owner">{{message.text}}</li>
+            <li v-for="(message, index) in messages" v-bind:key="index" :class="message.owner">{{message.text}}</li>
           </ul>
         </v-row>
         <v-row :style="messageContainerStyles">
           <v-col cols="12" md="12">
             <v-textarea
-                    filled
-                    name="input-7-1"
-                    label="Type your message"
-                    v-model="input"
-            ></v-textarea>
+              filled
+              name="input-7-1"
+              label="Type your message"
+              v-model="input"
+              :disabled="!chatStarted">
+            </v-textarea>
           </v-col>
           <v-col cols="12" md="12">
             <div class="my-2">
-              <v-btn @click="send" x-large :style="buttonStyles" color="primary" dark>Send Message</v-btn>
+              <v-btn 
+                :disabled="ableToSubmitAnswer"
+                @click="send" 
+                x-large 
+                :style="buttonStyles"
+                color="primary" 
+                dark>
+                {{ chatStarted ? 'Send Message' : 'Let\'s chat!' }}
+              </v-btn>
             </div>
           </v-col>
         </v-row>
@@ -40,65 +49,25 @@
 </template>
 
 <script>
+import { messageHandler } from '@/services/messageHandler'
 
 export default {
   name: 'App',
 
-  components: {
-
-  },
-
   data: () => ({
-    name: '',
-    age: 0,
-    location: '',
-    feeling: '',
-    hobby: '',
+    chatData: {
+      name: '',
+      age: 0,
+      location: '',
+      feeling: '',
+      hobby: ''
+    },
     next: 0,
     input: '',
-    toChat: [],
-    messages: [
-      {
-        text: "Hi, I'm Peter!",
-        owner: 'him'
-      },
-      {
-        text: "What's your name?",
-        ask: "name",
-        owner: 'him'
-      },
-      {
-        text: "Nice to meet you!",
-        owner: 'him'
-      },
-      {
-        text: "How was your day?",
-        ask: "feeling",
-        owner: 'him'
-      },
-      {
-        text: "Where're you from?",
-        ask: "location",
-        owner: 'him'
-      },
-      {
-        text: "Nice!",
-        owner: 'him'
-      },
-      {
-        text: "How old are you?",
-        ask: "age",
-        owner: 'him'
-      },
-      {
-        text: "What's your favorite hobby?",
-        ask: "hobby",
-        owner: 'him'
-      },
-      {
-        text: "Wow, cool",
-      }
-    ],
+    loading: false,
+    chatStarted: false,
+    messages: [],
+    currentQuestion: '',
     buttonStyles: {
       position: 'absolute', 
       bottom: 0, 
@@ -115,25 +84,67 @@ export default {
       background: '#ffffff'
     }
   }),
+
   methods: {
     send() {
-      let active = true
-      while(active) {
+      this.loading = true;
 
-        if (typeof this.messages[this.next].ask === 'undefined') {
-          this.next += 1;
-        } else {
-          this.next += 1;
-          if (this.messages[this.next].ask === 'name') {
-            this.name = this.input
-            this.messages.splice(this.next, 0,{
+      this.validate()
+
+      this.chatData[this.currentQuestion] = this.input
+
+      messageHandler.sendMessage(this.next)
+      .then(receivedData => {
+        this.next += receivedData.length
+
+        if (receivedData[receivedData.length - 1].ask) {
+          this.currentQuestion = receivedData[receivedData.length - 1].ask
+        }
+
+        if (this.chatStarted) {
+          const populatedData = this.replaceName(receivedData)
+
+          if (this.input) {
+            this.messages.push({
               text: this.input,
               owner: 'me'
             })
           }
-          active = false;
+
+          this.messages = [ ...this.messages, ...populatedData ]
+        } else {
+          this.messages = [ ...this.messages, ...receivedData ]
         }
+
+        if (!this.chatStarted) {
+          this.chatStarted = true;
+        }
+      })
+      .catch(e => console.log(e))
+      .finally(() => {
+        this.loading = false;
+        this.input = '';
+      })
+    },
+
+    validate() {
+      if (this.chatStarted && !this.input.trim()) {
+        alert('Sorry, I don\'t read in Invisibilish')
+        return
       }
+    },
+
+    replaceName(data) {
+      return data.map(q => ({
+        ...q,
+        text: q.text.replace('%name%', this.chatData.name)
+      }))
+    }
+  },
+
+  computed: {
+    ableToSubmitAnswer() {
+      return this.chatStarted && !this.input
     }
   }
 };
