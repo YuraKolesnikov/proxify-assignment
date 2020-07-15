@@ -37,3 +37,12 @@ Your task is to fix the broken chatbot and write as many features properly as yo
 2. Use **Composite API**
 3. Be creative and add nice features
 4. Add vue-typed-js for type animations
+
+
+#### Nice features:  
+1. Inactivity timer (start the chat, do not submit any messages for 15 seconds on any question before chat ends)
+2. Disabled submit button when chat is started and textarea is empty
+3. Empty string and whitespace check
+4. Bot typing animation (simulating request/response cycle)
+5. Scroll to bottom when new messages appear
+6. Using client's name
