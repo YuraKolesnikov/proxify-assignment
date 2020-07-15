@@ -5,7 +5,9 @@
     <v-content>
       <v-container fluid>
         <v-row>
-          <chat-container :messages="messages" />
+          <chat-container 
+            :loading="loading"
+            :messages="messages" />
         </v-row>
         <v-row :style="messageContainerStyles">
           <v-col cols="12" md="12">
@@ -84,49 +86,55 @@ export default {
 
   methods: {
     send() {
+      this.loading = true;
+
       this.validate()
 
       this.chatData[this.currentQuestion] = this.input
 
-      messageHandler.sendMessage(this.next)
-      .then(receivedData => {
-        this.next += receivedData.length
+      if (this.input) {
+        this.messages.push({
+          text: this.input,
+          owner: 'me'
+        })
+      }
 
-        if (receivedData[receivedData.length - 1].ask) {
-          this.currentQuestion = receivedData[receivedData.length - 1].ask
-        }
+      /* Used just for visual chat simulation */
+      setTimeout(() => {
+        messageHandler.sendMessage(this.next)
+        .then(receivedData => {
+          this.next += receivedData.length
 
-        if (this.chatStarted) {
-          const populatedData = this.replaceName(receivedData)
-
-          if (this.input) {
-            this.messages.push({
-              text: this.input,
-              owner: 'me'
-            })
+          if (receivedData[receivedData.length - 1].ask) {
+            this.currentQuestion = receivedData[receivedData.length - 1].ask
           }
 
-          this.messages = [ ...this.messages, ...populatedData ]
-        } else {
-          this.messages = [ ...this.messages, ...receivedData ]
-        }
+          if (this.chatStarted) {
+            const populatedData = this.replaceName(receivedData)
 
-        if (!this.chatStarted) {
-          this.chatStarted = true
-        }
+            this.messages = [ ...this.messages, ...populatedData ]
+          } else {
+            this.messages = [ ...this.messages, ...receivedData ]
+          }
 
-        if (this.messages[this.messages.length - 1].last) {
-          this.chatStarted = false
-          this.chatEnded = true
-          this.clearCountdown()
-        } else {
-          this.resetCountdown()
-        }
-      })
-      .catch(e => console.log(e))
-      .finally(() => {
-        this.input = ''
-      })
+          if (!this.chatStarted) {
+            this.chatStarted = true
+          }
+
+          if (this.messages[this.messages.length - 1].last) {
+            this.chatStarted = false
+            this.chatEnded = true
+            this.clearCountdown()
+          } else {
+            this.resetCountdown()
+          }
+        })
+        .catch(e => console.log(e))
+        .finally(() => {
+          this.input = ''
+          this.loading = false
+        })
+      }, 2000)
     },
 
     validate() {
@@ -154,11 +162,19 @@ export default {
     },
 
     sendStillThereAlert() {
-      this.messages.push({
-        text: 'Still here?',
-        owner: 'him'
-      })
+      this.loading = true
+      setTimeout(() => {
+        this.loading = false
+        this.messages.push({
+          text: 'Still here?',
+          owner: 'him'
+        })
+      }, 1500)
     }
+  },
+
+  beforeDestroy() {
+    this.clearCountdown()
   },
 
   computed: {
@@ -172,51 +188,3 @@ export default {
   }
 };
 </script>
-
-<style>
-  ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    left: 0;
-    right: 0;
-    overflow-y: scroll;
-    height: 600px;
-    z-index: 0;
-    padding-bottom: 100px;
-  }
-
-  ul li {
-    display: inline-block;
-    clear: both;
-    padding: 20px;
-    border-radius: 30px;
-    margin-bottom: 2px;
-    font-family: Helvetica, Arial, sans-serif;
-  }
-
-  .him {
-    background: #eee;
-    float: left;
-  }
-
-  .me {
-    float: right;
-    background: #0084ff;
-    color: #fff;
-  }
-
-  .him + .me {
-    border-bottom-right-radius: 5px;
-  }
-
-  .me + .me {
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-  }
-
-  .me:last-of-type {
-    border-bottom-right-radius: 30px;
-  }
-</style>
